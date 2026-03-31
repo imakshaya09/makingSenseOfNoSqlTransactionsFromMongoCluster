@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>MongoDB Customer Transaction Report</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Fp3VQH6Dg5Kb1SnRh0FDdBCcjTOgBIazCja7Gv6RJfhSBrw1nEAaE8kupgG3h9FQ" crossorigin="anonymous" />
+  </head>
+  <body>
+    <div class="container py-5">
+      <h1 class="mb-4">Customer Transaction Report</h1>
+
+      {% if error %}
+        <div class="alert alert-danger">Error: {{ error }}</div>
+      {% endif %}
+
+      {% if summaries %}
+        <div class="table-responsive">
+          <table class="table table-bordered table-striped align-middle">
+            <thead class="table-dark">
+              <tr>
+                <th>Customer</th>
+                <th>Total Transactions</th>
+                <th>Exceeded Any Account Limit</th>
+                <th>Accounts</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for summary in summaries %}
+                <tr>
+                  <td>{{ summary.name or 'N/A' }}</td>
+                  <td>{{ summary.customerTotal or 0 }}</td>
+                  <td>{{ 'Yes' if summary.exceededAnyAccountLimit else 'No' }}</td>
+                  <td>
+                    <ul class="mb-0">
+                      {% for account in summary.accounts %}
+                        <li>
+                          <strong>{{ account.account_id or 'N/A' }}</strong> — limit: {{ account.limit or 0 }}, total: {{ account.transactionTotal or 0 }}
+                        </li>
+                      {% endfor %}
+                    </ul>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <div class="alert alert-info">No customer summaries available yet. Check the MongoDB connection and collection data.</div>
+      {% endif %}
+    </div>
+  </body>
+</html>
